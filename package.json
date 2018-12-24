@@ -4,7 +4,7 @@
   "description": "Add directives to custom elements",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nyc tape -r babel-register ./test/**/*.js"
   },
   "repository": {
     "type": "git",
@@ -18,5 +18,20 @@
   "bugs": {
     "url": "https://github.com/OmarCastro/custom-elements-directives/issues"
   },
-  "homepage": "https://github.com/OmarCastro/custom-elements-directives#readme"
+  "homepage": "https://github.com/OmarCastro/custom-elements-directives#readme",
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/register": "^7.0.0",
+    "babel-preset-env": "^1.6.0",
+    "nyc": "^13.1.0",
+    "tape": "^4.9.1"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  },
+  "dependencies": {
+    "babel-register": "^6.26.0"
+  }
 }

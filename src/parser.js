@@ -53,6 +53,7 @@ export default function parseAttributeValue(text){
             case DIRECTIVE_PARAM:
                 if(escapingChar){
                     directiveParam += char
+                    escapingChar = false
                     continue
                 }
                 if(whiteSpaceRegex.test(char)){
@@ -77,6 +78,7 @@ export default function parseAttributeValue(text){
             case DIRECTIVE_PARAM_SINGLE_QUOTE:
                 if(escapingChar){
                     directiveParam += char
+                    escapingChar = false
                     continue
                 }
                 if(char === "'"){
@@ -92,6 +94,7 @@ export default function parseAttributeValue(text){
             case DIRECTIVE_PARAM_DOUBLE_QUOTE:
                 if(escapingChar){
                     directiveParam += char
+                    escapingChar = false
                     continue
                 }
                 if(char === '"'){
