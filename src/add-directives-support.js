@@ -76,7 +76,7 @@ const API = {
     fromAttribute(attribute){
         return {
             addDirectivesSupport(targetClass){
-                return addDirectivesSupportMixin(targetClass, attribute);
+                return addDirectivesSupport(targetClass, attribute);
             }
         }
     }
