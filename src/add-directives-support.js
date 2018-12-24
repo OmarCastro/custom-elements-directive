@@ -2,7 +2,7 @@ import parseAttributeValue from "./parser"
 
 const appliedDirectivesProp = Symbol("appliedDirectivesProp")
 
-function connectDirectives(element, definedDirectives){
+function connectDirectives(element, targetAttributeName, definedDirectives){
     const attributeWithDirectives = element.getAttribute(targetAttributeName)
     const parsedAttributeMap = attributeWithDirectives ? parseAttributeValue(attributeWithDirectives) : {}
     const appliedDirectives = [];
@@ -60,7 +60,7 @@ function addDirectivesSupport(targetElementClass, targetAttributeName){
             if(typeof super.connectedCallback === "function"){
                 super.connectedCallback()
             }
-            connectDirectives(this, WithDirectivesSupport._definedDirectives)
+            connectDirectives(this, targetAttributeName, WithDirectivesSupport._definedDirectives)
             if(typeof super.directivesConnectedCallback === "function"){
                 super.directivesConnectedCallback()
             }

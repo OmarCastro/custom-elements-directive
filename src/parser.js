@@ -9,21 +9,28 @@ export default function parseAttributeValue(text){
     const DIRECTIVE_PARAM_DOUBLE_QUOTE = 4
 
     let state = NONE;
+    let charPosition = -1;
     const attributes = {}
     let directiveName = ""
     let directiveParam = ""
     let escapingChar = false
 
-    const pushAttribute = () => {
-        if(directiveName !== ""){
-            attributes[directiveName] = directiveParam
-         }
+    function pushAttribute(){
+        attributes[directiveName] = directiveParam
         directiveName = ""
         directiveParam = ""
     }
 
-    text = text.trim()
+
+    function parseFailureMessage(errorMsg){
+        return [
+            `Error: ${errorMsg}`,
+            `at: ${text}`,
+            `    ${"-".repeat(charPosition) + "^"}`].join("\n")
+    } 
+
     for(const char of text){
+        charPosition++;
         switch(state){
             case NONE:
                 if(whiteSpaceRegex.test(char)){
@@ -34,7 +41,7 @@ export default function parseAttributeValue(text){
                     directiveName += char
                     continue
                 }
-                break
+                throw Error(parseFailureMessage("Directive name must contain only alphanumeric, dash, colon or underscore charaters"))
             case DIRECTIVE_NAME:
                 if(whiteSpaceRegex.test(char)){
                     state = NONE
@@ -49,7 +56,7 @@ export default function parseAttributeValue(text){
                     state = DIRECTIVE_PARAM
                     continue
                 }
-                break
+                throw Error(parseFailureMessage("Directive name must contain only alphanumeric, dash, colon or underscore charaters"))
             case DIRECTIVE_PARAM:
                 if(escapingChar){
                     directiveParam += char
