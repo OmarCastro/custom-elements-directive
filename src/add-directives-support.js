@@ -35,18 +35,18 @@ function disconnectDirectives(element){
 }
 
 
-function addDirectivesSupport(targetElementClass, targetAttributeName){    
-    class WithDirectivesSupport extends targetElementClass {
+function addDirectivesSupport(targetElementClass, targetAttributeName){  
+    class classWithDirectivesSupport extends targetElementClass {
         
         static get definedDirectives(){
-            return Object.assign({}, WithDirectivesSupport._definedDirectives);
+            return Object.assign({}, this._definedDirectives);
         }
 
         static defineDirective(directiveName, directivePrototype){
             if(typeof directiveName !== "string"){
                 throw Error("expected directive name to be a string")
             }
-            return WithDirectivesSupport._definedDirectives[directiveName] = directivePrototype
+            return this._definedDirectives[directiveName] = directivePrototype
         }
 
         disconnectedCallback(){
@@ -60,16 +60,17 @@ function addDirectivesSupport(targetElementClass, targetAttributeName){
             if(typeof super.connectedCallback === "function"){
                 super.connectedCallback()
             }
-            connectDirectives(this, targetAttributeName, WithDirectivesSupport._definedDirectives)
+            connectDirectives(this, targetAttributeName, classWithDirectivesSupport._definedDirectives)
             if(typeof super.directivesConnectedCallback === "function"){
                 super.directivesConnectedCallback()
             }
         }
     }
 
-    WithDirectivesSupport._definedDirectives = {}
+    Object.defineProperty(classWithDirectivesSupport, 'name', {value: targetElementClass.name});
+    classWithDirectivesSupport._definedDirectives = {}
 
-    return WithDirectivesSupport
+    return classWithDirectivesSupport
 }
 
 const API = {

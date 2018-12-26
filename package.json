@@ -23,6 +23,7 @@
     "@babel/core": "^7.2.2",
     "@babel/register": "^7.0.0",
     "babel-preset-env": "^1.6.0",
+    "jsdom-wc": "^11.0.0-alpha-1",
     "nyc": "^13.1.0",
     "tape": "^4.9.1"
   },
