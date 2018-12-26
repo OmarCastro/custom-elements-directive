@@ -21,7 +21,7 @@ const disconnectedOnce = Symbol('disconnectedOnce')
 const directiveConnectedCalls = Symbol('connectedCalls')
 const directiveDisconnectedCalls = Symbol('disconnectedCalls')
 
-ExtendedElementWithProp.defineDirective('test-directive', {
+const testDirectivePrototype = {
   connectedCallback () {
     const { ownerElement } = this
     ownerElement[isConnected] = true
@@ -35,8 +35,17 @@ ExtendedElementWithProp.defineDirective('test-directive', {
     ownerElement[disconnectedOnce] = true
     ownerElement[directiveDisconnectedCalls] = (ownerElement[directiveDisconnectedCalls] || 0) + 1
   }
-})
+}
+
+ExtendedElementWithProp.defineDirective('test-directive', testDirectivePrototype)
 customElements.define('x-test', ExtendedElementWithProp)
+
+test('directives extension test - get map of defined directives', t => {
+  t.plan(1)
+  t.deepEqual(ExtendedElementWithProp.definedDirectives, {
+    'test-directive': testDirectivePrototype
+  })
+})
 
 test('directives extension test - check directive connection callback are called correctly', t => {
   const elem = document.createElement('x-test')
