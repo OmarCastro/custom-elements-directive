@@ -14,22 +14,6 @@ class ElementWithProp extends HTMLElement {
   }
 }
 
-class ElementWithConnectionCallbacks extends HTMLElement {
-  constructor (...args) {
-    super(...args)
-    this._numOfConnectedCallbacksCalled = 0
-    this._numODisconnectedCallbacksCalled = 1
-  }
-
-  connectedCallback () {
-    this._numOfConnectedCallbacksCalled++
-  }
-
-  disconnectedCallback () {
-    this._numOfConnectedCallbacksCalled++
-  }
-}
-
 const ExtendedElementWithProp = directiveApi.fromAttribute('has').addDirectivesSupport(ElementWithProp)
 
 const isConnected = Symbol('isConnected')

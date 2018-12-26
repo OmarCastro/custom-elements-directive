@@ -4,7 +4,7 @@
   "description": "Add directives to custom elements",
   "main": "index.js",
   "scripts": {
-    "test": "standart && nyc tape -r babel-register ./test/**/*.test.js"
+    "test": "standard && nyc tape -r babel-register ./test/**/*.test.js"
   },
   "repository": {
     "type": "git",
