@@ -9,13 +9,13 @@ export default function parseAttributeValue (text) {
 
   let state = NONE
   let charPosition = -1
-  const attributes = {}
+  const directives = []
   let directiveName = ''
   let directiveParam = ''
   let escapingChar = false
 
-  function pushAttribute () {
-    attributes[directiveName] = directiveParam
+  function pushDirective () {
+    directives.push({ name: directiveName, value: directiveParam })
     directiveName = ''
     directiveParam = ''
   }
@@ -43,7 +43,7 @@ export default function parseAttributeValue (text) {
       case DIRECTIVE_NAME:
         if (whiteSpaceRegex.test(char)) {
           state = NONE
-          pushAttribute()
+          pushDirective()
           continue
         }
         if (attributeCharRegex.test(char)) {
@@ -63,7 +63,7 @@ export default function parseAttributeValue (text) {
         }
         if (whiteSpaceRegex.test(char)) {
           state = NONE
-          pushAttribute()
+          pushDirective()
           continue
         }
         if (char === '\\') {
@@ -114,6 +114,6 @@ export default function parseAttributeValue (text) {
         break
     };
   }
-  pushAttribute()
-  return attributes
+  pushDirective()
+  return directives
 }

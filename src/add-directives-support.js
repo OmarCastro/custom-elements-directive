@@ -4,15 +4,15 @@ const appliedDirectivesProp = Symbol('appliedDirectives')
 
 function connectDirectives (element, targetAttributeName, definedDirectives) {
   const attributeWithDirectives = element.getAttribute(targetAttributeName)
-  const parsedAttributeMap = attributeWithDirectives ? parseAttributeValue(attributeWithDirectives) : {}
+  const parsedAttributeList = attributeWithDirectives ? parseAttributeValue(attributeWithDirectives) : []
   const appliedDirectives = []
   element[appliedDirectivesProp] = appliedDirectives
 
-  for (const [key, value] of Object.entries(parsedAttributeMap)) {
-    if (definedDirectives[key]) {
-      const directiveInstance = Object.create(definedDirectives[key])
+  for (const { name, value } of parsedAttributeList) {
+    if (definedDirectives[name]) {
+      const directiveInstance = Object.create(definedDirectives[name])
       directiveInstance.ownerElement = element
-      directiveInstance.directive = { name: key, value }
+      directiveInstance.directive = { name, value }
       appliedDirectives.push(directiveInstance)
     }
   }
