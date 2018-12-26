@@ -4,7 +4,7 @@
   "description": "Add directives to custom elements",
   "main": "index.js",
   "scripts": {
-    "test": "nyc tape -r babel-register ./test/**/*.js"
+    "test": "standart && nyc tape -r babel-register ./test/**/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
     "babel-preset-env": "^1.6.0",
     "jsdom-wc": "^11.0.0-alpha-1",
     "nyc": "^13.1.0",
+    "standard": "*",
     "tape": "^4.9.1"
   },
   "babel": {

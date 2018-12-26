@@ -1,2 +1,2 @@
-import API from "./src/add-directives-support"
+import API from './src/add-directives-support'
 export default API
