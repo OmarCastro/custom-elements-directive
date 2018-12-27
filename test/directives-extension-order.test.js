@@ -32,24 +32,27 @@ class ElementWithConnectionCallbacks extends HTMLElement {
   }
 }
 
-function testDirectiveWithName (directiveName) {
-  return {
-    connectedCallback () {
-      this.ownerElement[actionsExecuted].push(DIR_CONNECTED_CB(directiveName))
-    },
-
-    disconnectedCallback () {
-      this.ownerElement[actionsExecuted].push(DIR_DISCONNECTED_CB(directiveName))
-    }
+class TestDirectiveWithName {
+  constructor (directiveName){
+    this.directiveName = directiveName;
   }
+
+  connectedCallback () {
+    this.ownerElement[actionsExecuted].push(DIR_CONNECTED_CB(this.directiveName))
+  }
+
+  disconnectedCallback () {
+    this.ownerElement[actionsExecuted].push(DIR_DISCONNECTED_CB(this.directiveName))
+  }
+  
 }
 
 const ExtendedElement = directiveApi.onAttribute('has').addDirectivesSupport(ElementWithConnectionCallbacks)
 
 ExtendedElement
-  .defineDirective('dir1', testDirectiveWithName('dir1'))
-  .defineDirective('dir2', testDirectiveWithName('dir2'))
-  .defineDirective('dir3', testDirectiveWithName('dir3'))
+  .defineDirective('dir1', new TestDirectiveWithName('dir1'))
+  .defineDirective('dir2', new TestDirectiveWithName('dir2'))
+  .defineDirective('dir3', new TestDirectiveWithName('dir3'))
   
 customElements.define('x-test', ExtendedElement)
 
