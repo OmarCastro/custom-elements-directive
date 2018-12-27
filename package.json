@@ -4,7 +4,8 @@
   "description": "Add directives to custom elements",
   "main": "index.js",
   "scripts": {
-    "test": "standard && nyc tape -r babel-register ./test/**/*.test.js"
+    "test": "cross-env NODE_ENV=test nyc tape ./test/**/*.test.js",
+    "lint": "standard --fix"
   },
   "repository": {
     "type": "git",
@@ -21,8 +22,10 @@
   "homepage": "https://github.com/OmarCastro/custom-elements-directives#readme",
   "devDependencies": {
     "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
     "@babel/register": "^7.0.0",
-    "babel-preset-env": "^1.6.0",
+    "babel-plugin-istanbul": "^5.1.0",
+    "cross-env": "^5.2.0",
     "jsdom-wc": "^11.0.0-alpha-1",
     "nyc": "^13.1.0",
     "standard": "*",
@@ -30,10 +33,19 @@
   },
   "babel": {
     "presets": [
-      "env"
-    ]
+      "@babel/preset-env"
+    ],
+    "env": {
+      "test": {
+        "plugins": ["istanbul"]
+      }
+    }
   },
-  "dependencies": {
-    "babel-register": "^6.26.0"
+  "nyc": {
+    "require": [
+      "@babel/register"
+    ],
+    "sourceMap": false,
+    "instrument": false
   }
 }
