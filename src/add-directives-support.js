@@ -46,7 +46,7 @@ function addDirectivesSupport (targetElementClass, targetAttributeName) {
       if (typeof directiveName !== 'string') {
         throw Error('expected directive name to be a string')
       } if (directivePrototype == null) {
-        throw Error('expected directive prototype to be an object')
+        throw Error('expected directive prototype to be an non null object')
       } else if (definedDirectives[directiveName] != null) {
         throw Error(`directive ${directiveName} is already defined, cannot redefine directives`)
       }

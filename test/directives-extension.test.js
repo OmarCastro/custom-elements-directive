@@ -47,6 +47,51 @@ test('directives extension test - get map of defined directives', t => {
   })
 })
 
+test('directives extension test - throw error when trying to define a directive with an invalid name', t => {
+  t.plan(3)
+  t.throws(() => ExtendedElementWithProp.defineDirective([], testDirectivePrototype))
+  try {
+    ExtendedElementWithProp.defineDirective([], testDirectivePrototype)
+  } catch (error) {
+    t.equals(error.message, 'expected directive name to be a string')
+  }
+
+  // definedDirectives remains unchanged
+  t.deepEqual(ExtendedElementWithProp.definedDirectives, {
+    'test-directive': testDirectivePrototype
+  })
+})
+
+test('directives extension test - throw error when trying to define a directive with an invalid property', t => {
+  t.plan(3)
+  t.throws(() => ExtendedElementWithProp.defineDirective('invalid-directive', null))
+  try {
+    ExtendedElementWithProp.defineDirective('invalid-directive', null)
+  } catch (error) {
+    t.equals(error.message, 'expected directive prototype to be an non null object')
+  }
+
+  // definedDirectives remains unchanged
+  t.deepEqual(ExtendedElementWithProp.definedDirectives, {
+    'test-directive': testDirectivePrototype
+  })
+})
+
+test('directives extension test - throw error when trying to redefine a directive', t => {
+  t.plan(3)
+  t.throws(() => ExtendedElementWithProp.defineDirective('test-directive', testDirectivePrototype))
+  try {
+    ExtendedElementWithProp.defineDirective('test-directive', testDirectivePrototype)
+  } catch (error) {
+    t.equals(error.message, 'directive test-directive is already defined, cannot redefine directives')
+  }
+
+  // definedDirectives remains unchanged
+  t.deepEqual(ExtendedElementWithProp.definedDirectives, {
+    'test-directive': testDirectivePrototype
+  })
+})
+
 test('directives extension test - check directive connection callback are called correctly', t => {
   const elem = document.createElement('x-test')
   elem.setAttribute('has', 'test-directive')
