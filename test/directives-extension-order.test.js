@@ -1,5 +1,5 @@
 import test from 'tape'
-import directiveApi from '../src/add-directives-support'
+import directiveApi from '..'
 import { JSDOM } from 'jsdom-wc'
 const window = (new JSDOM()).window
 global.window = window

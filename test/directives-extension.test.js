@@ -1,5 +1,5 @@
 import test from 'tape'
-import directiveApi from '../src/add-directives-support'
+import directiveApi from '..'
 import { JSDOM } from 'jsdom-wc'
 const window = (new JSDOM()).window
 global.window = window
@@ -38,12 +38,14 @@ const testDirectivePrototype = {
 }
 
 ExtendedElementWithProp.defineDirective('test-directive', testDirectivePrototype)
+ExtendedElementWithProp.defineDirective('dev-null-directive', {})
 customElements.define('x-test', ExtendedElementWithProp)
 
 test('directives extension test - get map of defined directives', t => {
   t.plan(1)
   t.deepEqual(ExtendedElementWithProp.definedDirectives, {
-    'test-directive': testDirectivePrototype
+    'test-directive': testDirectivePrototype,
+    'dev-null-directive': {}
   })
 })
 
@@ -58,7 +60,8 @@ test('directives extension test - throw error when trying to define a directive 
 
   // definedDirectives remains unchanged
   t.deepEqual(ExtendedElementWithProp.definedDirectives, {
-    'test-directive': testDirectivePrototype
+    'test-directive': testDirectivePrototype,
+    'dev-null-directive': {}
   })
 })
 
@@ -73,7 +76,8 @@ test('directives extension test - throw error when trying to define a directive 
 
   // definedDirectives remains unchanged
   t.deepEqual(ExtendedElementWithProp.definedDirectives, {
-    'test-directive': testDirectivePrototype
+    'test-directive': testDirectivePrototype,
+    'dev-null-directive': {}
   })
 })
 
@@ -88,9 +92,67 @@ test('directives extension test - throw error when trying to redefine a directiv
 
   // definedDirectives remains unchanged
   t.deepEqual(ExtendedElementWithProp.definedDirectives, {
-    'test-directive': testDirectivePrototype
+    'test-directive': testDirectivePrototype,
+    'dev-null-directive': {}
   })
 })
+
+test('directives extension test - no directive applied when attribute is not appied', t => {
+  const elem = document.createElement('x-test')
+  document.body.appendChild(elem)
+  t.equals(elem[testProp], 'OK')
+  t.equals(elem[isConnected], undefined, 'isConnected property is not defined')
+  document.body.removeChild(elem)
+  document.body.appendChild(elem)
+  t.equals(elem[testProp], 'OK')
+  t.equals(elem[isConnected], undefined, 'isConnected property still not defined')
+  document.body.removeChild(elem)
+  t.end()
+});
+
+test('directives extension test - no directive applied when attribute is empty', t => {
+  const elem = document.createElement('x-test')
+  elem.setAttribute('has', '')
+  document.body.appendChild(elem)
+  t.equals(elem[testProp], 'OK')
+  t.equals(elem[isConnected], undefined, 'isConnected property is not defined')
+  document.body.removeChild(elem)
+  document.body.appendChild(elem)
+  t.equals(elem[testProp], 'OK')
+  t.equals(elem[isConnected], undefined, 'isConnected property still not defined')
+  document.body.removeChild(elem)
+  t.end()
+});
+
+test('directives extension test - no directive applied when attribute contains no defined directive', t => {
+  const elem = document.createElement('x-test')
+  elem.setAttribute('has', 'unknown-directive')
+  document.body.appendChild(elem)
+  t.equals(elem[testProp], 'OK')
+  t.equals(elem[isConnected], undefined, 'isConnected property is not defined')
+  document.body.removeChild(elem)
+  document.body.appendChild(elem)
+  t.equals(elem[testProp], 'OK')
+  t.equals(elem[isConnected], undefined, 'isConnected property still not defined')
+  document.body.removeChild(elem)
+  t.end()
+});
+
+test('directives extension test - no additional actions are executed when applying an directive that does nothing', t => {
+  const elem = document.createElement('x-test')
+  elem.setAttribute('has', 'dev-null-directive')
+  document.body.appendChild(elem)
+  t.equals(elem[testProp], 'OK')
+  t.equals(elem[isConnected], undefined, 'isConnected property is not defined')
+  document.body.removeChild(elem)
+  document.body.appendChild(elem)
+  t.equals(elem[testProp], 'OK')
+  t.equals(elem[isConnected], undefined, 'isConnected property still not defined')
+  document.body.removeChild(elem)
+  t.end()
+});
+
+
 
 test('directives extension test - check directive connection callback are called correctly', t => {
   const elem = document.createElement('x-test')
@@ -115,6 +177,8 @@ test('directives extension test - check directive connection callback are called
   t.equals(elem[disconnectedOnce], true, 'disconnectedOnce property after reinsert on DOM')
   t.equals(elem[directiveConnectedCalls], 2, 'directive connected callback called twice, first on the first insertion, second on reinsertion')
   t.equals(elem[directiveDisconnectedCalls], 1, 'directive disconnected callback still called once, on removal on DOM')
+
+  document.body.removeChild(elem)
 
   t.end()
 })

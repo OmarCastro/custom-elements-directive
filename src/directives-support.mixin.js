@@ -24,7 +24,7 @@ function connectDirectives (element, targetAttributeName, definedDirectives) {
 }
 
 function disconnectDirectives (element) {
-  const appliedDirectives = element[appliedDirectivesProp] || []
+  const appliedDirectives = element[appliedDirectivesProp]
   for (let i = appliedDirectives.length - 1; i >= 0; i--) {
     const directiveInstance = appliedDirectives[i]
     if (typeof directiveInstance.disconnectedCallback === 'function') {
@@ -34,7 +34,7 @@ function disconnectDirectives (element) {
   element[appliedDirectivesProp] = []
 }
 
-function addDirectivesSupport (targetElementClass, targetAttributeName) {
+export default function addDirectivesSupport (targetElementClass, targetAttributeName) {
   const definedDirectives = {}
 
   class classWithDirectivesSupport extends targetElementClass {
@@ -75,15 +75,3 @@ function addDirectivesSupport (targetElementClass, targetAttributeName) {
   Object.defineProperty(classWithDirectivesSupport, 'name', { value: targetElementClass.name })
   return classWithDirectivesSupport
 }
-
-const API = {
-  fromAttribute (attribute) {
-    return {
-      addDirectivesSupport (targetClass) {
-        return addDirectivesSupport(targetClass, attribute)
-      }
-    }
-  }
-}
-
-export default API
