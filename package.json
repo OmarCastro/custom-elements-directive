@@ -1,6 +1,6 @@
 {
   "name": "custom-elements-directives",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Add directives to custom elements",
   "main": "index.js",
   "scripts": {
