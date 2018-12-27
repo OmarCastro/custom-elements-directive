@@ -14,7 +14,7 @@ class ElementWithProp extends HTMLElement {
   }
 }
 
-const ExtendedElementWithProp = directiveApi.fromAttribute('has').addDirectivesSupport(ElementWithProp)
+const ExtendedElementWithProp = directiveApi.onAttribute('has').addDirectivesSupport(ElementWithProp)
 
 const isConnected = Symbol('isConnected')
 const disconnectedOnce = Symbol('disconnectedOnce')
@@ -108,7 +108,7 @@ test('directives extension test - no directive applied when attribute is not app
   t.equals(elem[isConnected], undefined, 'isConnected property still not defined')
   document.body.removeChild(elem)
   t.end()
-});
+})
 
 test('directives extension test - no directive applied when attribute is empty', t => {
   const elem = document.createElement('x-test')
@@ -122,7 +122,7 @@ test('directives extension test - no directive applied when attribute is empty',
   t.equals(elem[isConnected], undefined, 'isConnected property still not defined')
   document.body.removeChild(elem)
   t.end()
-});
+})
 
 test('directives extension test - no directive applied when attribute contains no defined directive', t => {
   const elem = document.createElement('x-test')
@@ -136,7 +136,7 @@ test('directives extension test - no directive applied when attribute contains n
   t.equals(elem[isConnected], undefined, 'isConnected property still not defined')
   document.body.removeChild(elem)
   t.end()
-});
+})
 
 test('directives extension test - no additional actions are executed when applying an directive that does nothing', t => {
   const elem = document.createElement('x-test')
@@ -150,9 +150,7 @@ test('directives extension test - no additional actions are executed when applyi
   t.equals(elem[isConnected], undefined, 'isConnected property still not defined')
   document.body.removeChild(elem)
   t.end()
-});
-
-
+})
 
 test('directives extension test - check directive connection callback are called correctly', t => {
   const elem = document.createElement('x-test')

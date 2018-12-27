@@ -44,11 +44,13 @@ function testDirectiveWithName (directiveName) {
   }
 }
 
-const ExtendedElement = directiveApi.fromAttribute('has').addDirectivesSupport(ElementWithConnectionCallbacks)
+const ExtendedElement = directiveApi.onAttribute('has').addDirectivesSupport(ElementWithConnectionCallbacks)
 
-ExtendedElement.defineDirective('dir1', testDirectiveWithName('dir1'))
-ExtendedElement.defineDirective('dir2', testDirectiveWithName('dir2'))
-ExtendedElement.defineDirective('dir3', testDirectiveWithName('dir3'))
+ExtendedElement
+  .defineDirective('dir1', testDirectiveWithName('dir1'))
+  .defineDirective('dir2', testDirectiveWithName('dir2'))
+  .defineDirective('dir3', testDirectiveWithName('dir3'))
+  
 customElements.define('x-test', ExtendedElement)
 
 test('directives extension test - check directive connection callback are called in correct order', t => {

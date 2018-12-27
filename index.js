@@ -1,7 +1,7 @@
 import addDirectivesSupport from './src/directives-support.mixin'
 
 const API = {
-  fromAttribute (attribute) {
+  onAttribute (attribute) {
     return {
       addDirectivesSupport (targetClass) {
         return addDirectivesSupport(targetClass, attribute)
