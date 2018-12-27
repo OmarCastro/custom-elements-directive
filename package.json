@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test nyc tape ./test/**/*.test.js",
+    "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
     "lint": "standard --fix"
   },
   "repository": {
@@ -25,6 +26,7 @@
     "@babel/preset-env": "^7.2.3",
     "@babel/register": "^7.0.0",
     "babel-plugin-istanbul": "^5.1.0",
+    "codecov": "^3.1.0",
     "cross-env": "^5.2.0",
     "jsdom-wc": "^11.0.0-alpha-1",
     "nyc": "^13.1.0",
@@ -37,7 +39,9 @@
     ],
     "env": {
       "test": {
-        "plugins": ["istanbul"]
+        "plugins": [
+          "istanbul"
+        ]
       }
     }
   },
@@ -46,6 +50,22 @@
       "@babel/register"
     ],
     "sourceMap": false,
-    "instrument": false
+    "instrument": false,
+    "check-coverage": true,
+    "all": true,
+    "extension": [
+      ".js"
+    ],
+    "include": [
+      "src/**/*.js",
+      "index.js"
+    ],
+    "reporter": [
+      "html",
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "report-dir": "coverage"
   }
 }
