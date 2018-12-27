@@ -58,7 +58,8 @@
     ],
     "include": [
       "src/**/*.js",
-      "index.js"
+      "index.js",
+      "README.md"
     ],
     "reporter": [
       "html",
