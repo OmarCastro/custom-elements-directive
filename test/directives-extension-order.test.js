@@ -1,3 +1,16 @@
+/**
+ * This file tests the following features:
+ *
+ *    The connectCallback methods of custom elements and directives are executed in the following order:
+ *      1. custom element "connectedCallback" method
+ *      2. applied directives "connectedCallback" method in left-to-rigth order
+ *      3. custom element "directivesConnectedCallback" method
+ *
+ *    The disconnectedCallback methods of custom elements and directives are executed in the following order:
+ *      1. applied directives "disconnectedCallback" method in rigth-to-left order
+ *      2. custom element "disconnectedCallback" method
+ */
+
 import test from 'tape'
 import directiveApi from '..'
 import { JSDOM } from 'jsdom-wc'
@@ -12,11 +25,23 @@ const CUSTOM_ELEM_DIRS_CONNECTED_CB = 'custom element directives connected callb
 const CUSTOM_ELEM_DISCONNECTED_CB = 'custom element disconnected callback'
 const DIR_CONNECTED_CB = (directiveName) => `directive ${directiveName} connected callback`
 const DIR_DISCONNECTED_CB = (directiveName) => `directive ${directiveName} disconnected callback`
+const DIR_VALUE_CHANGED_CB = (directiveName) => `directive ${directiveName} value changed`
 
 class ElementWithConnectionCallbacks extends HTMLElement {
   constructor (...args) {
     super(...args)
     this[actionsExecuted] = []
+  }
+
+  static get observedAttributes () {
+    return ['test-attr']
+  }
+
+  attributeChangedCallback (name, oldValue, newValue) {
+    switch (name) {
+      case 'test-attr':
+        break
+    }
   }
 
   connectedCallback () {
@@ -33,8 +58,12 @@ class ElementWithConnectionCallbacks extends HTMLElement {
 }
 
 class TestDirectiveWithName {
-  constructor (directiveName){
-    this.directiveName = directiveName;
+  constructor (directiveName) {
+    this.directiveName = directiveName
+  }
+
+  valueChanged () {
+    this.ownerElement[actionsExecuted].push(DIR_VALUE_CHANGED_CB(this.directiveName))
   }
 
   connectedCallback () {
@@ -44,7 +73,6 @@ class TestDirectiveWithName {
   disconnectedCallback () {
     this.ownerElement[actionsExecuted].push(DIR_DISCONNECTED_CB(this.directiveName))
   }
-  
 }
 
 const ExtendedElement = directiveApi.onAttribute('has').addDirectivesSupport(ElementWithConnectionCallbacks)
@@ -53,7 +81,7 @@ ExtendedElement
   .defineDirective('dir1', new TestDirectiveWithName('dir1'))
   .defineDirective('dir2', new TestDirectiveWithName('dir2'))
   .defineDirective('dir3', new TestDirectiveWithName('dir3'))
-  
+
 customElements.define('x-test', ExtendedElement)
 
 test('directives extension test - check directive connection callback are called in correct order', t => {
@@ -62,27 +90,58 @@ test('directives extension test - check directive connection callback are called
 
   document.body.appendChild(elem)
 
-  t.deepEqual(elem[actionsExecuted], [
+  let expectedExecutedActions = [
     CUSTOM_ELEM_CONNECTED_CB,
     DIR_CONNECTED_CB('dir1'),
     DIR_CONNECTED_CB('dir2'),
     DIR_CONNECTED_CB('dir3'),
     CUSTOM_ELEM_DIRS_CONNECTED_CB
+  ]
+
+  t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
+
+  elem.setAttribute('has', 'dir1 dir2')
+
+  expectedExecutedActions.push(...[
+    DIR_DISCONNECTED_CB('dir3')
   ])
+
+  t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
+
+  elem.setAttribute('has', 'dir1=value dir2')
+  elem.setAttribute('test-attr', 'dir1=value dir2')
+
+  expectedExecutedActions.push(...[
+    DIR_VALUE_CHANGED_CB('dir1')
+  ])
+
+  elem.setAttribute('has', 'dir1 dir2 dir3')
+
+  expectedExecutedActions.push(...[
+    DIR_VALUE_CHANGED_CB('dir1'),
+    DIR_CONNECTED_CB('dir3')
+  ])
+
+  t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
+
+  elem.setAttribute('has', 'dir1 dir3')
+
+  expectedExecutedActions.push(...[
+    DIR_DISCONNECTED_CB('dir3'),
+    DIR_DISCONNECTED_CB('dir2'),
+    DIR_CONNECTED_CB('dir3')
+  ])
+
+  t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
 
   document.body.removeChild(elem)
 
-  t.deepEqual(elem[actionsExecuted], [
-    CUSTOM_ELEM_CONNECTED_CB,
-    DIR_CONNECTED_CB('dir1'),
-    DIR_CONNECTED_CB('dir2'),
-    DIR_CONNECTED_CB('dir3'),
-    CUSTOM_ELEM_DIRS_CONNECTED_CB,
+  expectedExecutedActions.push(...[
     DIR_DISCONNECTED_CB('dir3'),
-    DIR_DISCONNECTED_CB('dir2'),
     DIR_DISCONNECTED_CB('dir1'),
     CUSTOM_ELEM_DISCONNECTED_CB
   ])
 
+  t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
   t.end()
 })
