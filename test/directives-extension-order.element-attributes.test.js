@@ -13,9 +13,7 @@
 
 import test from 'tape'
 import directiveApi from '..'
-import { JSDOM } from 'jsdom-wc'
-const window = (new JSDOM()).window
-global.window = window
+import window from './setup'
 const { HTMLElement, customElements, document } = window
 
 const actionsExecuted = Symbol('actionsExecuted')
@@ -75,18 +73,20 @@ class TestDirectiveWithName {
   }
 }
 
-const ExtendedElement = directiveApi.onAttribute('has').addDirectivesSupport(ElementWithConnectionCallbacks)
+const ExtendedElement = directiveApi.usingElementAttributes().addDirectivesSupport(ElementWithConnectionCallbacks)
 
 ExtendedElement
   .defineDirective('dir1', new TestDirectiveWithName('dir1'))
   .defineDirective('dir2', new TestDirectiveWithName('dir2'))
   .defineDirective('dir3', new TestDirectiveWithName('dir3'))
 
-customElements.define('x-test', ExtendedElement)
+customElements.define('x-test-attributes-order', ExtendedElement)
 
 test('directives extension test - check directive connection callback are called in correct order', t => {
-  const elem = document.createElement('x-test')
-  elem.setAttribute('has', 'dir1 dir2 dir3')
+  const elem = document.createElement('x-test-attributes-order')
+  elem.setAttribute('dir1', '')
+  elem.setAttribute('dir2', '')
+  elem.setAttribute('dir3', '')
 
   document.body.appendChild(elem)
 
@@ -100,48 +100,64 @@ test('directives extension test - check directive connection callback are called
 
   t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
 
-  elem.setAttribute('has', 'dir1 dir2')
+  elem.removeAttribute('dir3')
 
-  expectedExecutedActions.push(...[
-    DIR_DISCONNECTED_CB('dir3')
-  ])
+  setTimeout(checkExecutedActions1, 100)
 
-  t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
+  function checkExecutedActions1 () {
+    expectedExecutedActions.push(...[
+      DIR_DISCONNECTED_CB('dir3')
+    ])
 
-  elem.setAttribute('has', 'dir1=value dir2')
-  elem.setAttribute('test-attr', 'dir1=value dir2')
+    t.deepEqual(elem[actionsExecuted], expectedExecutedActions, 'checkExecutedActions1')
 
-  expectedExecutedActions.push(...[
-    DIR_VALUE_CHANGED_CB('dir1')
-  ])
+    elem.setAttribute('dir1', 'value')
+    elem.setAttribute('test-attr', 'dir1=value dir2')
+    setTimeout(checkExecutedActions2, 100)
+  }
 
-  elem.setAttribute('has', 'dir1 dir2 dir3')
+  function checkExecutedActions2 () {
+    expectedExecutedActions.push(...[
+      DIR_VALUE_CHANGED_CB('dir1')
+    ])
 
-  expectedExecutedActions.push(...[
-    DIR_VALUE_CHANGED_CB('dir1'),
-    DIR_CONNECTED_CB('dir3')
-  ])
+    t.deepEqual(elem[actionsExecuted], expectedExecutedActions, 'checkExecutedActions2')
 
-  t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
+    elem.setAttribute('dir1', 'value2')
+    elem.setAttribute('dir3', '')
+    setTimeout(checkExecutedActions3, 100)
+  }
 
-  elem.setAttribute('has', 'dir1 dir3')
+  function checkExecutedActions3 () {
+    expectedExecutedActions.push(...[
+      DIR_VALUE_CHANGED_CB('dir1'),
+      DIR_CONNECTED_CB('dir3')
+    ])
 
-  expectedExecutedActions.push(...[
-    DIR_DISCONNECTED_CB('dir3'),
-    DIR_DISCONNECTED_CB('dir2'),
-    DIR_CONNECTED_CB('dir3')
-  ])
+    t.deepEqual(elem[actionsExecuted], expectedExecutedActions, 'checkExecutedActions3')
 
-  t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
+    elem.removeAttribute('dir2')
+    setTimeout(checkExecutedActions4, 100)
+  }
 
-  document.body.removeChild(elem)
+  function checkExecutedActions4 () {
+    expectedExecutedActions.push(...[
+      DIR_DISCONNECTED_CB('dir3'),
+      DIR_DISCONNECTED_CB('dir2'),
+      DIR_CONNECTED_CB('dir3')
+    ])
 
-  expectedExecutedActions.push(...[
-    DIR_DISCONNECTED_CB('dir3'),
-    DIR_DISCONNECTED_CB('dir1'),
-    CUSTOM_ELEM_DISCONNECTED_CB
-  ])
+    t.deepEqual(elem[actionsExecuted], expectedExecutedActions, 'checkExecutedActions4')
 
-  t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
-  t.end()
+    document.body.removeChild(elem)
+
+    expectedExecutedActions.push(...[
+      DIR_DISCONNECTED_CB('dir3'),
+      DIR_DISCONNECTED_CB('dir1'),
+      CUSTOM_ELEM_DISCONNECTED_CB
+    ])
+
+    t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
+    t.end()
+  }
 })

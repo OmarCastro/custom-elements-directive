@@ -1,8 +1,6 @@
 import test from 'tape'
 import directiveApi from '..'
-import { JSDOM } from 'jsdom-wc'
-const window = (new JSDOM()).window
-global.window = window
+import window from './setup'
 const { HTMLElement, customElements, document } = window
 
 const testProp = Symbol('testProp')
@@ -14,7 +12,7 @@ class ElementWithProp extends HTMLElement {
   }
 }
 
-const ExtendedElementWithProp = directiveApi.onAttribute('has').addDirectivesSupport(ElementWithProp)
+const ExtendedElementWithProp = directiveApi.usingElementAttributes.addDirectivesSupport(ElementWithProp)
 
 const isConnected = Symbol('isConnected')
 const disconnectedOnce = Symbol('disconnectedOnce')
@@ -39,7 +37,6 @@ const testDirectivePrototype = {
 
 ExtendedElementWithProp.defineDirective('test-directive', testDirectivePrototype)
 ExtendedElementWithProp.defineDirective('dev-null-directive', {})
-customElements.define('x-test', ExtendedElementWithProp)
 
 test('directives extension test - get map of defined directives', t => {
   t.plan(1)
@@ -97,8 +94,10 @@ test('directives extension test - throw error when trying to redefine a directiv
   })
 })
 
+customElements.define('x-test-attributes', ExtendedElementWithProp)
+
 test('directives extension test - no directive applied when attribute is not appied', t => {
-  const elem = document.createElement('x-test')
+  const elem = document.createElement('x-test-attributes')
   document.body.appendChild(elem)
   t.equals(elem[testProp], 'OK')
   t.equals(elem[isConnected], undefined, 'isConnected property is not defined')
@@ -111,7 +110,7 @@ test('directives extension test - no directive applied when attribute is not app
 })
 
 test('directives extension test - no directive applied when attribute is empty', t => {
-  const elem = document.createElement('x-test')
+  const elem = document.createElement('x-test-attributes')
   elem.setAttribute('has', '')
   document.body.appendChild(elem)
   t.equals(elem[testProp], 'OK')
@@ -125,7 +124,7 @@ test('directives extension test - no directive applied when attribute is empty',
 })
 
 test('directives extension test - no directive applied when attribute contains no defined directive', t => {
-  const elem = document.createElement('x-test')
+  const elem = document.createElement('x-test-attributes')
   elem.setAttribute('has', 'unknown-directive')
   document.body.appendChild(elem)
   t.equals(elem[testProp], 'OK')
@@ -139,7 +138,7 @@ test('directives extension test - no directive applied when attribute contains n
 })
 
 test('directives extension test - no additional actions are executed when applying an directive that does nothing', t => {
-  const elem = document.createElement('x-test')
+  const elem = document.createElement('x-test-attributes')
   elem.setAttribute('has', 'dev-null-directive')
   document.body.appendChild(elem)
   t.equals(elem[testProp], 'OK')
@@ -153,8 +152,8 @@ test('directives extension test - no additional actions are executed when applyi
 })
 
 test('directives extension test - check directive connection callback are called correctly', t => {
-  const elem = document.createElement('x-test')
-  elem.setAttribute('has', 'test-directive')
+  const elem = document.createElement('x-test-attributes')
+  elem.setAttribute('test-directive', '')
 
   document.body.appendChild(elem)
 

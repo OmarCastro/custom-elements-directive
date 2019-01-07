@@ -6,9 +6,7 @@
 
 import test from 'tape'
 import directiveApi from '..'
-import { JSDOM } from 'jsdom-wc'
-const window = (new JSDOM()).window
-global.window = window
+import window from './setup'
 const { HTMLElement, customElements, document } = window
 
 const actionsExecuted = Symbol('actionsExecuted')
@@ -57,37 +55,34 @@ class TestDirectiveWithName {
   }
 }
 
-const ExtendedElementWithObservedAttributes = directiveApi.onAttribute('has').addDirectivesSupport(ElementWithObservedAttributes)
+const ExtendedElementWithObservedAttributes = directiveApi.usingElementAttributes.addDirectivesSupport(ElementWithObservedAttributes)
 
 ExtendedElementWithObservedAttributes
   .defineDirective('dir1', new TestDirectiveWithName('dir1'))
   .defineDirective('dir2', new TestDirectiveWithName('dir2'))
   .defineDirective('dir3', new TestDirectiveWithName('dir3'))
 
-customElements.define('x-test', ExtendedElementWithObservedAttributes)
+customElements.define('x-test-attributes-reflection', ExtendedElementWithObservedAttributes)
 
-const ExtendedElement = directiveApi.onAttribute('has').addDirectivesSupport(ElementWithoutObservedAttributes)
+const ExtendedElement = directiveApi.usingElementAttributes().addDirectivesSupport(ElementWithoutObservedAttributes)
 
 ExtendedElement
   .defineDirective('dir1', new TestDirectiveWithName('dir1'))
   .defineDirective('dir2', new TestDirectiveWithName('dir2'))
   .defineDirective('dir3', new TestDirectiveWithName('dir3'))
 
-customElements.define('x-test-2', ExtendedElement)
+customElements.define('x-test-attributes-reflection-2', ExtendedElement)
 
-test('directives extension test - check class extension observed attribute is concatenated if defined', t => {
+test('directives extension test - check class extension observed attribute does not affect original class', t => {
   t.plan(1)
-  t.deepEqual(ExtendedElementWithObservedAttributes.observedAttributes, ['has', 'test-attr'])
-})
-
-test('directives extension test - check class extension observed attribute is created if not defined', t => {
-  t.plan(1)
-  t.deepEqual(ExtendedElement.observedAttributes, ['has'])
+  t.deepEqual(ExtendedElementWithObservedAttributes.observedAttributes, ['test-attr'])
 })
 
 test('directives extension test - check class extension not affecting original class attribute observers', t => {
-  const elem = document.createElement('x-test')
-  elem.setAttribute('has', 'dir1 dir2 dir3')
+  const elem = document.createElement('x-test-attributes-reflection')
+  elem.setAttribute('dir1', '')
+  elem.setAttribute('dir2', '')
+  elem.setAttribute('dir3', '')
 
   document.body.appendChild(elem)
 
@@ -116,12 +111,15 @@ test('directives extension test - check class extension not affecting original c
   ])
 
   t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
+
   t.end()
 })
 
 test('directives extension test - chack class extension not affecting original class attribute observers', t => {
-  const elem = document.createElement('x-test-2')
-  elem.setAttribute('has', 'dir1 dir2 dir3')
+  const elem = document.createElement('x-test-attributes-reflection-2')
+  elem.setAttribute('dir1', '')
+  elem.setAttribute('dir2', '')
+  elem.setAttribute('dir3', '')
 
   document.body.appendChild(elem)
 
@@ -137,7 +135,10 @@ test('directives extension test - chack class extension not affecting original c
   // nothing happened in this case
   t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
 
-  elem.setAttribute('has', 'dir1="a" dir2="b" dir3="c"')
+  elem.setAttribute('dir1', 'a')
+  elem.setAttribute('dir2', 'b')
+  elem.setAttribute('dir3', 'c')
+
   // nothing happened in this case
   t.deepEqual(elem[actionsExecuted], expectedExecutedActions)
 
