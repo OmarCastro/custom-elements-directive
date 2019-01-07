@@ -1,8 +1,9 @@
-import parseAttributeValue from './parser'
 import { reloadDirectives, initializeDirectives, finalizeDirectives, isDirectivesReloadEnabledOnElement } from './directives-management'
 
-function getParsedAttributesList (targetAttributeValue) {
-  return targetAttributeValue ? parseAttributeValue(targetAttributeValue) : []
+const attributesObserver = Symbol("attributesObserver")
+
+function getParsedAttributesList (element) {
+  return Array.from(element.attributes).map(attribute => ({name: attribute.name, value: attribute.value}))
 }
 
 export default function addDirectivesSupport (targetElementClass, targetAttributeName) {
@@ -25,31 +26,10 @@ export default function addDirectivesSupport (targetElementClass, targetAttribut
       return this
     }
 
-    static get observedAttributes () {
-      if (Array.isArray(super.observedAttributes)) {
-        return [targetAttributeName].concat(super.observedAttributes)
-      } else {
-        return [targetAttributeName]
-      }
-    }
-
-    attributeChangedCallback (name, oldValue, newValue) {
-      switch (name) {
-        case targetAttributeName:
-          if (isDirectivesReloadEnabledOnElement(this)) {
-            reloadDirectives(this, getParsedAttributesList(newValue), definedDirectives)
-          }
-          break
-        default:
-          if (typeof super.attributeChangedCallback === 'function') {
-            super.attributeChangedCallback(name, oldValue, newValue)
-          }
-          break
-      }
-    }
-
     disconnectedCallback () {
       finalizeDirectives(this)
+      this[attributesObserver] && this[attributesObserver].disconnect();
+      
       if (typeof super.disconnectedCallback === 'function') {
         super.disconnectedCallback()
       }
@@ -59,8 +39,13 @@ export default function addDirectivesSupport (targetElementClass, targetAttribut
       if (typeof super.connectedCallback === 'function') {
         super.connectedCallback()
       }
-      const parsedAttributeList = getParsedAttributesList(this.getAttribute(targetAttributeName))
+      const parsedAttributeList = getParsedAttributesList(this)
       initializeDirectives(this, parsedAttributeList, definedDirectives)
+      if(this[attributesObserver] == null){
+        var observer = new MutationObserver(() => reloadDirectives(this, getParsedAttributesList(this), definedDirectives));
+        this[attributesObserver] = observer;
+      }
+      this[attributesObserver].observe(this, {attributeFilter: Object.keys(definedDirectives)} )
       if (typeof super.directivesConnectedCallback === 'function') {
         super.directivesConnectedCallback()
       }
