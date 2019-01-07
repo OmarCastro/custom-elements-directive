@@ -1,9 +1,10 @@
-import { reloadDirectives, initializeDirectives, finalizeDirectives, isDirectivesReloadEnabledOnElement } from './directives-management'
+import { reloadDirectives, initializeDirectives, finalizeDirectives } from './directives-management'
+/* global MutationObserver */
 
-const attributesObserver = Symbol("attributesObserver")
+const attributesObserver = Symbol('attributesObserver')
 
 function getParsedAttributesList (element) {
-  return Array.from(element.attributes).map(attribute => ({name: attribute.name, value: attribute.value}))
+  return Array.from(element.attributes).map(attribute => ({ name: attribute.name, value: attribute.value }))
 }
 
 export default function addDirectivesSupport (targetElementClass, targetAttributeName) {
@@ -28,8 +29,8 @@ export default function addDirectivesSupport (targetElementClass, targetAttribut
 
     disconnectedCallback () {
       finalizeDirectives(this)
-      this[attributesObserver] && this[attributesObserver].disconnect();
-      
+      this[attributesObserver] && this[attributesObserver].disconnect()
+
       if (typeof super.disconnectedCallback === 'function') {
         super.disconnectedCallback()
       }
@@ -41,11 +42,11 @@ export default function addDirectivesSupport (targetElementClass, targetAttribut
       }
       const parsedAttributeList = getParsedAttributesList(this)
       initializeDirectives(this, parsedAttributeList, definedDirectives)
-      if(this[attributesObserver] == null){
-        var observer = new MutationObserver(() => reloadDirectives(this, getParsedAttributesList(this), definedDirectives));
-        this[attributesObserver] = observer;
+      if (this[attributesObserver] == null) {
+        var observer = new MutationObserver(() => reloadDirectives(this, getParsedAttributesList(this), definedDirectives))
+        this[attributesObserver] = observer
       }
-      this[attributesObserver].observe(this, {attributeFilter: Object.keys(definedDirectives)} )
+      this[attributesObserver].observe(this, { attributeFilter: Object.keys(definedDirectives) })
       if (typeof super.directivesConnectedCallback === 'function') {
         super.directivesConnectedCallback()
       }
