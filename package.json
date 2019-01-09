@@ -4,7 +4,7 @@
   "description": "Add directives to custom elements",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test nyc tape ./test/**/*.test.js",
+    "test": "cross-env NODE_ENV=test nyc tape ./test-jsdom.js",
     "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
     "lint": "standard --fix"
   },
@@ -14,9 +14,11 @@
   },
   "keywords": [
     "dom",
-    "web", "components",
+    "web",
+    "components",
     "web components",
-    "custom","elements",
+    "custom",
+    "elements",
     "custom elements"
   ],
   "author": "Omar Castro",
@@ -31,6 +33,9 @@
     "@babel/register": "^7.0.0",
     "acorn": "^6.0.5",
     "babel-plugin-istanbul": "^5.1.0",
+    "babel-plugin-transform-builtin-classes": "^0.6.1",
+    "babelify": "^10.0.0",
+    "browserify": "^16.2.3",
     "codecov": "^3.1.0",
     "cross-env": "^5.2.0",
     "jsdom-wc": "^11.0.0-alpha-1",
@@ -42,6 +47,19 @@
   "babel": {
     "presets": [
       "@babel/preset-env"
+    ],
+    "plugins": [
+      [
+        "transform-builtin-classes",
+        {
+          "globals": [
+            "HTMLElement"
+          ]
+        }
+      ],
+      [
+        "istanbul", {"instrument": true,     "sourceMap": true}
+      ]
     ],
     "env": {
       "test": {
