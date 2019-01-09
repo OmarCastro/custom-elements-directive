@@ -1,6 +1,5 @@
 import test from 'tape'
 import directiveApi from '..'
-import window from './setup'
 const { HTMLElement, customElements, document } = window
 
 const testProp = Symbol('testProp')
