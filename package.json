@@ -4,7 +4,11 @@
   "description": "Add directives to custom elements",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test nyc tape ./test-jsdom.js",
+    "test": "run-s test:jsdom test:electron",
+    "test:jsdom": "cross-env NODE_ENV=test nyc tape ./test-jsdom.js | tap-spec",
+    "test:electron": "browserify -t babelify test-browser.js | tape-run | tap-spec",
+    "test:firefox": "browserify -t babelify test-browser.js | tape-run -b firefox | tap-spec",
+    "test:chrome": "browserify -t babelify test-browser.js | tape-run -b chrome | tap-spec",
     "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
     "lint": "standard --fix"
   },
@@ -40,9 +44,12 @@
     "cross-env": "^5.2.0",
     "jsdom-wc": "^11.0.0-alpha-1",
     "mutationobserver-shim": "^0.3.2",
+    "npm-run-all": "^4.1.5",
     "nyc": "^13.1.0",
     "standard": "^12.0.1",
-    "tape": "^4.9.2"
+    "tap-spec": "^5.0.0",
+    "tape": "^4.9.2",
+    "tape-run": "^5.0.0"
   },
   "babel": {
     "presets": [
@@ -56,9 +63,6 @@
             "HTMLElement"
           ]
         }
-      ],
-      [
-        "istanbul", {"instrument": true,     "sourceMap": true}
       ]
     ],
     "env": {
