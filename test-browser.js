@@ -1,1 +1,1 @@
-import "./test/scenarios"
+import './test/scenarios'

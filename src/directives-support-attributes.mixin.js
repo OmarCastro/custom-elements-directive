@@ -1,5 +1,4 @@
 import { reloadDirectives, initializeDirectives, finalizeDirectives } from './directives-management'
-/* global MutationObserver */
 
 const attributesObserver = Symbol('attributesObserver')
 

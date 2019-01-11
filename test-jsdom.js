@@ -1,2 +1,2 @@
-import "./test/setup-jsdom"
-import "./test/scenarios"
+import './test/setup-jsdom'
+import './test/scenarios'
