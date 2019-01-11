@@ -4,10 +4,10 @@ sudo: false
 node_js:
   - "node"
   - "lts/*"
-  - "9"
 
 addons:
   chrome: stable
+  firefox: latest
   apt:
     packages:
       - xvfb
