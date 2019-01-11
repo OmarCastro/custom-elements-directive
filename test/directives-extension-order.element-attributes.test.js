@@ -72,14 +72,10 @@ class TestDirectiveWithName {
   }
 }
 
-const ExtendedElement = directiveApi.usingElementAttributes().addDirectivesSupport(ElementWithConnectionCallbacks)
-
-ExtendedElement
+directiveApi.define('x-test-attributes-order', ElementWithConnectionCallbacks)
   .defineDirective('dir1', new TestDirectiveWithName('dir1'))
   .defineDirective('dir2', new TestDirectiveWithName('dir2'))
   .defineDirective('dir3', new TestDirectiveWithName('dir3'))
-
-customElements.define('x-test-attributes-order', ExtendedElement)
 
 test('directives extension test - check directive connection callback are called in correct order', t => {
   const elem = document.createElement('x-test-attributes-order')

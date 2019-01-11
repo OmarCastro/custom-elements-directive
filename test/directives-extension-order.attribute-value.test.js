@@ -13,7 +13,7 @@
 
 import test from 'tape'
 import directiveApi from '..'
-const { HTMLElement, customElements, document } = window
+const { HTMLElement, document } = window
 
 const actionsExecuted = Symbol('actionsExecuted')
 
@@ -72,14 +72,10 @@ class TestDirectiveWithName {
   }
 }
 
-const ExtendedElement = directiveApi.onAttribute('has').addDirectivesSupport(ElementWithConnectionCallbacks)
-
-ExtendedElement
+directiveApi.define('x-test-order', ElementWithConnectionCallbacks, { attribute: 'has' })
   .defineDirective('dir1', new TestDirectiveWithName('dir1'))
   .defineDirective('dir2', new TestDirectiveWithName('dir2'))
   .defineDirective('dir3', new TestDirectiveWithName('dir3'))
-
-customElements.define('x-test-order', ExtendedElement)
 
 test('directives extension test - check directive connection callback are called in correct order', t => {
   const elem = document.createElement('x-test-order')
