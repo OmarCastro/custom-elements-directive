@@ -54,7 +54,7 @@ class TestDirectiveWithName {
   }
 }
 
-const ExtendedElementWithObservedAttributes = directiveApi.usingElementAttributes.addDirectivesSupport(ElementWithObservedAttributes)
+const ExtendedElementWithObservedAttributes = directiveApi.extend(ElementWithObservedAttributes)
 
 ExtendedElementWithObservedAttributes
   .defineDirective('dir1', new TestDirectiveWithName('dir1'))
@@ -63,7 +63,7 @@ ExtendedElementWithObservedAttributes
 
 customElements.define('x-test-attributes-reflection', ExtendedElementWithObservedAttributes)
 
-const ExtendedElement = directiveApi.usingElementAttributes().addDirectivesSupport(ElementWithoutObservedAttributes)
+const ExtendedElement = directiveApi.extend(ElementWithoutObservedAttributes)
 
 ExtendedElement
   .defineDirective('dir1', new TestDirectiveWithName('dir1'))

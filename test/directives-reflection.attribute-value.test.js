@@ -54,16 +54,13 @@ class TestDirectiveWithName {
   }
 }
 
-const ExtendedElementWithObservedAttributes = directiveApi.onAttribute('has').addDirectivesSupport(ElementWithObservedAttributes)
-
-ExtendedElementWithObservedAttributes
+const ExtendedElementWithObservedAttributes = directiveApi.onAttribute('has')
+  .define('x-test-attribute-val-reflection', ElementWithObservedAttributes)
   .defineDirective('dir1', new TestDirectiveWithName('dir1'))
   .defineDirective('dir2', new TestDirectiveWithName('dir2'))
   .defineDirective('dir3', new TestDirectiveWithName('dir3'))
 
-customElements.define('x-test-attribute-val-reflection', ExtendedElementWithObservedAttributes)
-
-const ExtendedElement = directiveApi.onAttribute('has').addDirectivesSupport(ElementWithoutObservedAttributes)
+const ExtendedElement = directiveApi.onAttribute('has').extend(ElementWithoutObservedAttributes)
 
 ExtendedElement
   .defineDirective('dir1', new TestDirectiveWithName('dir1'))

@@ -11,7 +11,7 @@ class ElementWithProp extends HTMLElement {
   }
 }
 
-const ExtendedElementWithProp = directiveApi.usingElementAttributes.addDirectivesSupport(ElementWithProp)
+const ExtendedElementWithProp = directiveApi.extend(ElementWithProp)
 
 const isConnected = Symbol('isConnected')
 const disconnectedOnce = Symbol('disconnectedOnce')
