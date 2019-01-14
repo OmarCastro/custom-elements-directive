@@ -41,7 +41,7 @@ const loggerDirective = {
 
 
 // You define a custom element directive the same way you define a custom element
-customElementDirectives.define('custom-element', ElementWithConnectionCallbacks)
+customElementDirectives.define('custom-element', ACustomElement)
   .defineDirective('logs-stuff', loggerDirective)
 
 const element = document.createElement('custom-element')
@@ -57,7 +57,7 @@ document.body.removeChild(element)
 
 // If you want that the applied directives to reflect the value of an element attribute  
 // use the "attribute" option
-customElementDirectives.define('custom-element-attribute', ElementWithConnectionCallbacks, { attribute: 'features' })
+customElementDirectives.define('custom-element-attribute', ACustomElement, { attribute: 'features' })
   .defineDirective('logs-stuff', loggerDirective)
 
 const element2 = document.createElement('custom-element-attribute')
@@ -73,7 +73,7 @@ document.body.removeChild(element2)
 
 // If you wish only to extend the class to add support to directives
 // use extend method
-const ExtendedClass = customElementDirectives.extend(ElementWithConnectionCallbacks, { attribute: 'has' })
+const ExtendedClass = customElementDirectives.extend(ACustomElement, { attribute: 'has' })
   .defineDirective('stuff-logger', loggerDirective)
 customElements.define('custom-element-extended', ExtendedClass)
 
