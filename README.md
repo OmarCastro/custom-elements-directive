@@ -140,15 +140,67 @@ customElementDirectives.define('custom-element-abc', ACustomElement2)
 Defines a directive with the name `name` on the element
 
 
-### Diretives Structure
+## Diretive Structure
 
-A directive should represent an object that will use as prototype of the directive
+A directive should represent an object that will use as prototype object of the directive.
 
 ```Javascript
 
 {
   connectedCallback: Function;
   disconnectedCallback: Function;
+  valueChanged: Function;
 }
 
 ```
+
+However, the directive instance will have the following schema:
+
+```Javascript
+
+{
+  connectedCallback: Function;
+  disconnectedCallback: Function;
+  valueChanged: Function;
+  ownerElement: HTMLElement
+  directive: {
+    name: string
+    value: string
+  }
+}
+
+```
+
+#### Directive.connectedCallback()
+
+This callback is called when element is added to the DOM document with the fulfilled conditions to apply the directive, or when the condition to apply the element in the DOM fulfills.
+
+The conditions to apply the elements are as described previously: attribute with the directive name on the element; or the attribute used to apply directives contains the directive name 
+
+#### Directive.disconnectedCallback()
+This callback is called when element with the applied directive is removed to the DOM, or when the element loses the condition to apply the element in the DOM (e.g. attribute removed).
+
+#### Directive.valueChanged()
+This callback is called when the directive value changed. 
+
+If the element does not use an attribute to defined the directive, the value reflect the value in the element attribute.
+
+```HTML
+<custom-element attribute-name="attribute-value"/>
+```
+Otherwise, you can apply the value to a directive by appending the sign `=` to the attribute name.
+
+
+```HTML
+<custom-element directives="attribute-name='attribute-value'"/>
+```
+
+#### Directive.ownerElement
+element where the element directive is applied
+
+#### Directive.directive.name
+name of the directive, same as `name` on `ExtendedClass.defineDirective(name, directive)`
+
+#### Directive.directive.value
+value applied to the directive, see `Directive.valueChanged()`
+
