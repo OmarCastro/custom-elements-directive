@@ -87,3 +87,68 @@ document.body.removeChild(element3)
 // "directive disconnected" will be logged in the console, then
 // "element disconnected" will be logged in the console
 ```
+
+
+#### API
+
+##### customElementDirectives.extend(targetClass, options)
+
+This method extends the class and returns the extended class. The extended class is essentially a subclass of the targetClass, so the targetClass suffers no side effects. It accepts the following parameters:
+
+ - **targetClass**: The target class that will be used to create the extended class.
+ - **options**: an optional parameter, the extension option. If applied the option parameter should be object with the extension options. The only property that is supports is `attribute`. If the property is present, the directives applied will reflect the value applied in the defined attribute value, otherwise it will reflect on the attributes in the elmenet.
+
+
+##### customElementDirectives.define(name, options)
+
+A wrapper around `customElements.define` where the class is extended to add directives support. It accepts the following parameters:
+
+  - **name**: the name of the directive
+  - **options**: just like the second parameter of `customElements.define`, this parameter is an object that contains the propertes used in `customElements.define` plus the optional property `attribute` of the `extend` method
+
+
+##### customElementDirectives.onAttribute(name)
+
+Applies currying to the API functions `define` and `extends`, for reusability purposes. Useful if you want to create a rule where the directives are applied. You can define a module like
+
+```Javascript
+/* file: customized-api.js  */
+import customElementDirectives from "custom-elements-directives"
+/* Rule X: all extensions of the elmenents must be defined on the "plugin" attribute    */ 
+export default customElementDirectives.onAttribute("plugins")
+```
+
+And then you can import the created module instead of importing this lib:
+
+```Javascript
+import customElementDirectives from "./path/to/customized-api"
+
+...
+
+// will be the same as `customElementDirectives.extend(ACustomElement, { attribute: 'plugins' })`
+const ExtendedClass = customElementDirectives.extend(ACustomElement)
+
+...
+// will be the same as `customElementDirectives.define('custom-element-abc', ACustomElement2, { attribute: 'plugins' })`
+customElementDirectives.define('custom-element-abc', ACustomElement2)
+
+...
+```
+
+### ExtendedClass.defineDirective(name, directive)
+
+Defines a directive with the name `name` on the element
+
+
+### Diretives Structure
+
+A directive should represent an object that will use as prototype of the directive
+
+```Javascript
+
+{
+  connectedCallback: Function;
+  disconnectedCallback: Function;
+}
+
+```
