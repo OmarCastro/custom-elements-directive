@@ -3,7 +3,7 @@ Custom elements directives &middot; [![npm](https://img.shields.io/npm/v/custom-
 
 Custom elements directives is a Javascript library that adds directives support to custom elements
 
-Elements directives are re-usable pieces of logic that can be used to extend elements functionality.
+A directive in this case is an instruction to give to an element as to make a specific logic. It is used to break the logic in smaller pieces as to make the element more maintainable. It can also be used to extend the functionality of an element to a specific use case without the need to change the original logic of the custom element. 
 
 
 
@@ -30,11 +30,11 @@ class ACustomElement extends HTMLElement {
 
 const loggerDirective = {
   connectedCallback(){
-    console.log("directive connected")
+    console.log(`directive ${this.directive.name} connected`)
   }
 
   disconnectedCallback(){
-    console.log("directive disconnected")
+    console.log(`directive ${this.directive.name} disconnected`)
   }
 }
 
@@ -49,9 +49,9 @@ const element = document.createElement('custom-element')
 element.setAttribute('logs-stuff', '')
 document.body.appendChild(element)
 // "element connected" will be logged in the console, then
-// "directive connected" will be logged in the console
+// "directive logs-stuff connected" will be logged in the console
 document.body.removeChild(element)
-// "directive disconnected" will be logged in the console, then
+// "directive logs-stuff disconnected" will be logged in the console, then
 // "element disconnected" will be logged in the console
 
 
@@ -65,9 +65,9 @@ const element2 = document.createElement('custom-element-attribute')
 element2.setAttribute('features', 'logs-stuff')
 document.body.appendChild(element2)
 // "element connected" will be logged in the console, then
-// "directive connected" will be logged in the console
+// "directive logs-stuff connected" will be logged in the console
 document.body.removeChild(element2)
-// "directive disconnected" will be logged in the console, then
+// "directive logs-stuff disconnected" will be logged in the console, then
 // "element disconnected" will be logged in the console
 
 
@@ -82,9 +82,9 @@ const element3 = document.createElement('custom-element-extended')
 element3.setAttribute('has', 'stuff-logger')
 document.body.appendChild(element3)
 // "element connected" will be logged in the console, then
-// "directive connected" will be logged in the console
+// "directive stuff-logger connected" will be logged in the console
 document.body.removeChild(element3)
-// "directive disconnected" will be logged in the console, then
+// "directive stuff-logger disconnected" will be logged in the console, then
 // "element disconnected" will be logged in the console
 ```
 
@@ -154,7 +154,7 @@ A directive should represent an object that will use as prototype object of the 
 
 ```
 
-However, the directive instance will have the following schema:
+However, the directive instance will have the schema on the next figure, you can access the intance using the `this` keyword.
 
 ```Javascript
 
@@ -203,4 +203,3 @@ name of the directive, same as `name` on `ExtendedClass.defineDirective(name, di
 
 #### Directive.directive.value
 value applied to the directive, see `Directive.valueChanged()`
-
